@@ -1,13 +1,11 @@
-
+import {extend} from '@react-three/fiber'
+import {FontLoader} from
 import './App.css'
-import TextLoader from './TextLoader'
-import font from './fonts/font.json'
-
 function App() {
-
+ 
   return (
     <>
-  <TextLoader text={'hello'} fontPath={font}/>
+ 
     </>
   )
 }
