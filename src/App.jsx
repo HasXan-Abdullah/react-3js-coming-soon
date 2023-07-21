@@ -35,6 +35,7 @@ const App = () => {
       (droidFont) => {
         const textGeometry = new TextGeometry('Coming Soon', {
           size: 2,
+          
           height: 1,
           font: droidFont,
         });
