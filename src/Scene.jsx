@@ -3,13 +3,15 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-import galaxyTexture from './assets/galaxy.png'; // Make sure to import the galaxy texture image
+import galaxyTexture from './assets/galaxy.png';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 import cloudTexture from './assets/pngegg.png';
+
 const Scene = () => {
+ 
   const canvasRef = useRef(null);
   const [isDay, setIsDay] = useState(true);
 
@@ -18,7 +20,7 @@ const Scene = () => {
   };
 
   useEffect(() => {
-    let scene, camera, renderer, bloomComposer, starMesh,cloudMesh;
+    let scene, camera, renderer, bloomComposer, starMesh, cloudMesh;
 
     // Scene setup
     scene = new THREE.Scene();
@@ -43,19 +45,19 @@ const Scene = () => {
     renderer.setPixelRatio(window.devicePixelRatio ? window.devicePixelRatio : 1);
     // renderer.setClearColor(isDay ? 0xffffff : 0x000000, 0);
 
-    const controls = new OrbitControls(camera,  renderer.domElement);
-    
-    controls.enableDamping = true; // Add damping for smooth orbiting
-    controls.dampingFactor = 1; // Adjust damping factor as needed
-    controls.enableZoom = true; // Enable mouse wheel zooming
-    controls.minDistance = 10; // Set the minimum distance from the camera's target
-    controls.maxDistance = 28; // Set the maximum distance from the camera's target
-    controls.minPolarAngle = Math.PI / 2; // Set the minimum polar angle (in radians)
-    controls.maxPolarAngle = Math.PI / 1; // Set the maximum polar angle (in radians)
-    controls.minAzimuthAngle = -Math.PI / 6; // Set the minimum azimuth angle (in radians) for left movement
-    controls.maxAzimuthAngle = Math.PI / 6; // Set the maximum azimuth angle (in radians) for right movement
-    controls.minPolarAngle = Math.PI / 2; // Set the minimum polar angle (in radians) for up movement
-    controls.maxPolarAngle = Math.PI / 1.5; // Set the maximum polar angle (in radians) for down movement
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    controls.enableDamping = true;
+    controls.dampingFactor = 1;
+    controls.enableZoom = true;
+    controls.minDistance = 10;
+    controls.maxDistance = 28;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.maxPolarAngle = Math.PI / 1;
+    controls.minAzimuthAngle = -Math.PI / 6;
+    controls.maxAzimuthAngle = Math.PI / 6;
+    controls.minPolarAngle = Math.PI / 2;
+    controls.maxPolarAngle = Math.PI / 1.5;
 
     controls.update();
 
@@ -68,7 +70,7 @@ const Scene = () => {
       0.85
     );
     bloomPass.threshold = 0;
-    bloomPass.strength = isDay?0.3:0.1 ; // Intensity of glow
+    bloomPass.strength = isDay ? 0.3 : 0.1;
     bloomPass.radius = 0;
     bloomComposer = new EffectComposer(renderer);
     bloomComposer.setSize(window.innerWidth, window.innerHeight);
@@ -83,7 +85,7 @@ const Scene = () => {
     const sphere = new THREE.Mesh(geometry, material);
     sphere.position.set(0, 0, 0);
     sphere.layers.set(1);
-    
+
     isDay ? scene.add(sphere) : null;
 
     // Galaxy geometry
@@ -95,52 +97,52 @@ const Scene = () => {
       side: THREE.BackSide,
       transparent: true,
     });
-    // Galaxy geometry
+    starMaterial.map.needsUpdate = true;
+
+    // Cloud geometry
     const cloudGeometry = new THREE.SphereGeometry(80, 64, 64);
 
-    // Galaxy material
+    // Cloud material
     const cloudMaterial = new THREE.MeshBasicMaterial({
       map: new THREE.TextureLoader().load(cloudTexture),
       side: THREE.BackSide,
       transparent: true,
     });
+    cloudMaterial.map.needsUpdate = true;
 
-    
     // Load the font
     const fontLoader = new FontLoader();
-    fontLoader.load(
-      'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
-      (droidFont) => {
-        const textGeometry = new TextGeometry('Coming Soon', {
-          size: 2,
-          height: 1,
-          font: droidFont,
-        });
-        const textcolor = new THREE.Color('#cfd2c9');
-        const textMaterial = new THREE.MeshBasicMaterial( {color:textcolor});
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    fontLoader.load('/droid_serif_regular.typeface.json', (droidFont) => {
+      const textGeometry = new TextGeometry('Coming Soon', {
+        size: 2,
+        height: 1,
+        font: droidFont,
+      });
+      const textcolor = new THREE.Color('#cfd2c9');
+      const textMaterial = new THREE.MeshBasicMaterial({ color: textcolor });
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
-        // Center the text on the screen
-        textGeometry.computeBoundingBox();
-        const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-        textMesh.position.x = -textWidth / 2;
-        textMesh.position.y = 0;
-        textMesh.position.set(-8, -5, -2);
-        textMesh.layers.set(1);
-        scene.add(textMesh);
-      }
-    );
+      // Center the text on the screen
+      textGeometry.computeBoundingBox();
+      const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+      textMesh.position.x = -textWidth / 2;
+      textMesh.position.y = 0;
+      textMesh.position.set(-8, -5, -2);
+      textMesh.layers.set(1);
+      scene.add(textMesh);
+    });
 
     // Galaxy mesh
     starMesh = new THREE.Mesh(starGeometry, starMaterial);
     starMesh.layers.set(1);
-    
-// cloud mesh
-cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-cloudMesh.layers.set(1);
-isDay ? scene.add(cloudMesh) : scene.add(starMesh);
+
+    // Cloud mesh
+    cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
+    cloudMesh.layers.set(1);
+    isDay ? scene.add(cloudMesh) : scene.add(starMesh);
+
     // Ambient light
-   
+    // ...
 
     // Resize listener
     const handleResize = () => {
@@ -173,15 +175,14 @@ isDay ? scene.add(cloudMesh) : scene.add(starMesh);
       camera = null;
       renderer = null;
     };
-  }, [isDay]); // Add isDay to the dependency array to trigger the effect on its change
+  }, [isDay]);
 
   return (
     <div style={{ position: 'relative' }}>
       <canvas className="webgl" ref={canvasRef} />
-      {/* Add the button with absolute positioning */}
       <button
         style={{ zIndex: '999', position: 'absolute', top: '20px', left: '20px' }}
-        onClick={() => handleDayNight()} // Call the handleDayNight function when the button is clicked
+        onClick={() => handleDayNight()}
       >
         Toggle Day/Night
       </button>
